@@ -3,21 +3,17 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
-#include <ArduinoJson.h>
 
 //constants
-#define ssid "JioFiber-6G9Mq"
-#define pass "12345678"
-/*const size_t bufferSize = JSON_ARRAY_SIZE(1) + JSON_OBJECT_SIZE(1) + 
-      2*JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(4) + JSON_OBJECT_SIZE(5) + 
-      JSON_OBJECT_SIZE(6) + JSON_OBJECT_SIZE(12) + 390;*/
+#define ssid "ATL LAB"
+#define pass "atl@12345"
 
 //globals
 WiFiClient client;
 String doom;
-const char* host PROGMEM = "https://api.climateclock.world";
-const char* api PROGMEM = "https://api.climateclock.world/v2/clock.json";
-const size_t cap = 40000;
+const char* host = "https://climateclockapi.opgamer3000pro.repl.co";
+const char* api_rtc = "https://climateclockapi.opgamer3000pro.repl.co/rtc";
+const char* api_timeLeft = "https://climateclockapi.opgamer3000pro.repl.co/timeLeft";
 
 void setup(){
   Serial.begin(115200);
@@ -38,34 +34,20 @@ void setup(){
   client.setInsecure(); //the magic line
   client.connect(host, 443);
 
-  http.begin(client, api);
+  http.begin(client, api_rtc);
 
   int HTTPcode = http.GET();
+  Serial.println(HTTPcode);
   if(HTTPcode == 200){
     doom = http.getString();
-    Serial.print(doom);
-    DynamicJsonDocument doom_json(cap);
-    DeserializationError error = deserializeJson(doom_json, doom);
-    Serial.println(doom_json.capacity());
-
-    if(error){
-      Serial.print(F("deserializeJson() failed: "));
-      Serial.println(error.f_str());
-      while(true);
-    }
-    
-    JsonObject data = doom_json["data"];
-    JsonObject data_modules = data["modules"];
-    JsonObject data_modules_carbon_deadline_1 = data_modules["carbon_deadline_1"];
-    const char* timestamp = data_modules_carbon_deadline_1["timestamp"];
-    
-    Serial.print("FINAL DATA: ");
-    Serial.println(timestamp);
-  } else {
-    Serial.printf("error while GET(): %d\n", HTTPcode);
-    while(true);
+    Serial.println(doom);
   }
 }
 
 void loop(){
+}
+
+String getNet(const char* host, const char* url){
+  WiFiClientSecure client;
+  HTTPClient http;
 }
